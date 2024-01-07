@@ -11,7 +11,7 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (str) => !str.includes("mysql://"),
+        (str) => !str.includes("some bad url stuff that we don't use in production"),
         "You forgot to change the default URL"
       ),
     NODE_ENV: z
