@@ -7,11 +7,9 @@ import {
 import Head from "next/head";
 import Link from "next/link";
 
-import { api } from "~/utils/api";
 
 export default function Home() {
   const { user } = useClerk();
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
   return (
     <>
@@ -26,9 +24,13 @@ export default function Home() {
         )}
         <div className="flex h-[90vh] w-full items-center justify-center">
           {user ? (
-            <div>
-              <Link href="/finances" className="rounded bg-blue-700 p-3 font-semibold text-white">
-                View your Finances
+            <div className="flex flex-col gap-2 justify-center items-start">
+              <h1 className="text-3xl font-semibold text-white">Hey {user.fullName}!</h1>
+              <Link
+                href="/finances"
+                className="rounded bg-blue-700 p-2 font-semibold text-white"
+              >
+                View Finances
               </Link>
             </div>
           ) : (

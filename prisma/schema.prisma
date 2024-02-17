@@ -2,152 +2,32 @@ generator client {
     provider = "prisma-client-js"
 }
 
+// SUPABASE_SESSION    for model updates
+// SUPABASE_TRANSACTION    for queries (prod)
+
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
-}
-
-model APISchema {
-    id           String   @id
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime
-    name         String   @db.VarChar(255)
-    description  String   @db.VarChar(255)
-    uri          String   @db.VarChar(255)
-    method       String   @db.VarChar(255)
-    headers      String   @db.LongText
-    body         String   @db.LongText
-    schemaResult String   @db.LongText
-    authorId     String   @db.VarChar(255)
-}
-
-model CustomFunction {
-    id          String   @id
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime
-    name        String   @db.VarChar(255)
-    description String?  @db.VarChar(255)
-    jobId       String
-    authorId    String   @db.VarChar(255)
-}
-
-model Example {
-    id        String   @id
-    createdAt DateTime @default(now())
-    updatedAt DateTime
-}
-
-model InstructionSetSchemaVersion {
-    id              String   @id
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime
-    name            String   @db.VarChar(255)
-    description     String   @db.VarChar(255)
-    jobid           String   @db.VarChar(255)
-    productionBuild Boolean  @default(false)
-    data            String   @db.LongText
-    authorId        String   @db.VarChar(255)
-}
-
-model Job {
-    id          String   @id
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime
-    title       String   @db.VarChar(255)
-    description String?  @db.VarChar(255)
-    data        String   @db.LongText
-    ui_data     String   @db.Text
-    authorId    String   @db.VarChar(255)
-}
-
-model Parameters {
-    id               String   @id
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime
-    name             String   @db.VarChar(255)
-    description      String?  @db.VarChar(255)
-    type             String   @db.VarChar(255)
-    required         Boolean  @default(false)
-    default          String?  @db.VarChar(255)
-    customFunctionId String
-    io               String   @db.VarChar(255)
-
-    @@index([customFunctionId], map: "customFunctionId")
-}
-
-model Pins {
-    id                String   @id
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime
-    pinCode           String   @db.VarChar(255)
-    userId            String   @db.VarChar(255)
-    deviceDescription String   @db.VarChar(255)
-    deviceId          String   @db.VarChar(255)
-    deviceName        String   @db.VarChar(255)
-    deviceType        String   @db.VarChar(255)
-    status            String   @db.VarChar(255)
-}
-
-model VariableType {
-    id          String   @id
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime
-    typeName    String   @db.VarChar(255)
-    description String   @db.VarChar(255)
-    authorId    String   @db.VarChar(255)
-    jobId       String   @db.VarChar(255)
-    colorHex    String   @default("#000000") @db.VarChar(255)
-
-    @@index([authorId], map: "authorId")
-}
-
-model Variables {
-    id          String   @id
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime
-    name        String   @db.VarChar(255)
-    description String?  @db.VarChar(255)
-    type        String   @db.VarChar(255)
-    required    Boolean  @default(false)
-    default     String?  @db.VarChar(255)
-    jobId       String
-    value       String?  @db.VarChar(255)
-    authorId    String   @db.VarChar(255)
-    typeId      String   @default("") @db.VarChar(255)
-}
-
-model CustomFunctionToJob {
-    A String
-    B String
-
-    @@unique([A, B], map: "_CustomFunctionToJob_AB_unique")
-    @@index([B], map: "_CustomFunctionToJob_B_index")
-    @@map("_CustomFunctionToJob")
-}
-
-model JobToVariables {
-    A String
-    B String
-
-    @@unique([A, B], map: "_JobToVariables_AB_unique")
-    @@index([B], map: "_JobToVariables_B_index")
-    @@map("_JobToVariables")
-}
-
-model UserData {
-    id        String   @id
-    createdAt DateTime @default(now())
-    updatedAt DateTime
-
-    clerkId  String @db.VarChar(255)
-    authorId String @db.VarChar(255)
+    provider = "postgresql"
+    url      = env("SUPABASE_TRANSACTION")
 }
 
 model Payable {
-    id        String   @id
-    createdAt DateTime @default(now())
-    updatedAt DateTime
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String   @db.VarChar(255)
+    payedTo     String   @db.VarChar(255)
+    description String   @db.VarChar(255)
+    amount      Decimal  @db.Decimal(10, 2)
+    authorId    String   @db.VarChar(255)
+}
 
-    clerkid  String @db.VarChar(255)
-    authorId String @db.VarChar(255)
+model Receivable {
+    id           String   @id @default(uuid())
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    name         String   @db.VarChar(255)
+    receivedFrom String   @db.VarChar(255)
+    description  String   @db.VarChar(255)
+    amount       Decimal  @db.Decimal(10, 2)
+    authorId     String   @db.VarChar(255)
 }
