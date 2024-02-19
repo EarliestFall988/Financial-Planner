@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Landing Page | FinPlan</title>
+        <title>Landing Page | Finance Pro</title>
       </Head>
       <div className="h-[100vh] bg-zinc-800">
         {user && (
