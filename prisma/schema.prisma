@@ -22,7 +22,6 @@ model Payable {
     tags Tag[]
 
     authorId        String @db.VarChar(255)
-    payableSourceId String
 }
 
 model Receivable {
@@ -66,11 +65,4 @@ model Tag {
     budgetPartitions BudgetPartition[]
 }
 
-model PayableSource {
-    id          String   @id @default(uuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    name        String   @db.VarChar(255)
-    description String   @db.VarChar(255)
-    authorId    String   @db.VarChar(255)
-}
+
