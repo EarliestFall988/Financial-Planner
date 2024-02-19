@@ -18,7 +18,11 @@ model Payable {
     payedTo     String   @db.VarChar(255)
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
-    authorId    String   @db.VarChar(255)
+
+    tags Tag[]
+
+    authorId        String @db.VarChar(255)
+    payableSourceId String
 }
 
 model Receivable {
@@ -29,5 +33,44 @@ model Receivable {
     receivedFrom String   @db.VarChar(255)
     description  String   @db.VarChar(255)
     amount       Decimal  @db.Decimal(10, 2)
-    authorId     String   @db.VarChar(255)
+
+    tags Tag[]
+
+    authorId String @db.VarChar(255)
+}
+
+model BudgetPartition {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String   @db.VarChar(255)
+    description String   @db.VarChar(255)
+    amount      Decimal  @db.Decimal(10, 2)
+    dueDate     DateTime
+
+    tags Tag[]
+
+    authorId String @db.VarChar(255)
+}
+
+model Tag {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String   @db.VarChar(255)
+    description String   @db.VarChar(255)
+    authorId    String   @db.VarChar(255)
+
+    payables         Payable[]
+    receivables      Receivable[]
+    budgetPartitions BudgetPartition[]
+}
+
+model PayableSource {
+    id          String   @id @default(uuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String   @db.VarChar(255)
+    description String   @db.VarChar(255)
+    authorId    String   @db.VarChar(255)
 }

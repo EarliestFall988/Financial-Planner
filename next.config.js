@@ -3,8 +3,15 @@
  * for Docker builds.
  */
 await import("./src/env.js");
+const pwa = await import("next-pwa");
 
-/** @type {import("next").NextConfig} */
+const withPwa = pwa.default({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  scope: "/finances",
+});
+
+// /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
 
@@ -19,4 +26,4 @@ const config = {
   },
 };
 
-export default config;
+export default withPwa(config);

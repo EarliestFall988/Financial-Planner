@@ -34,7 +34,7 @@ export default function Home() {
               </Link>
             </div>
           ) : (
-            <div>
+            <div className="bg-blue-500 rounded p-2 text-center text-white font-semibold">
               <SignInButton />
             </div>
           )}
