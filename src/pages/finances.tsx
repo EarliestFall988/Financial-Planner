@@ -1,12 +1,11 @@
-import { SignIn, UserButton, useClerk } from "@clerk/nextjs";
+import { SignIn, useClerk } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import {
-  ArrowDownIcon,
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
   Cog8ToothIcon,
   ExclamationTriangleIcon,
-  PlusIcon,
+  TrophyIcon,
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import Head from "next/head";
@@ -16,6 +15,7 @@ import { PropagateSpinner } from "~/components/PropagateSpinner";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { StickyHeader } from "~/components/header";
 
 dayjs.extend(relativeTime);
 
@@ -50,12 +50,7 @@ const Page: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-[100vh] bg-zinc-900 text-white">
-        <div className="fixed top-0 z-10 flex w-full items-center justify-between bg-zinc-900/60 p-2 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold">Recent Activity</h2>
-          <div className="flex items-center justify-center gap-4">
-            <UserButton />
-          </div>
-        </div>
+        <StickyHeader title="Recent Activity" />
         <div className="mx-auto flex gap-2 p-2 lg:w-5/6 lg:p-0 xl:w-2/3">
           <div className="hidden w-44 flex-col gap-2 p-2 md:flex">
             <div className="h-[10vh]" />
@@ -72,6 +67,13 @@ const Page: NextPage = () => {
             >
               <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-white" />
               Fund
+            </Link>
+            <Link
+              href="/goals/main"
+              className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+            >
+              <TrophyIcon className="h-5 w-5 text-white" />
+              Goals
             </Link>
             <Link
               href={"/settings/payment-types"}
@@ -183,9 +185,9 @@ const Page: NextPage = () => {
             )}
           </div>
         </div>
-        <div className="fixed bottom-0 w-full border-t border-zinc-500 bg-zinc-900 rounded-t-lg p-2 md:hidden">
+        <div className="fixed bottom-0 w-full rounded-t-lg border-t border-zinc-500 bg-zinc-900 p-2 md:hidden">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2" >
+            <div className="flex gap-2">
               <Link
                 href="/payables/new"
                 className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"

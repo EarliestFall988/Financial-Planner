@@ -38,15 +38,13 @@ model Receivable {
     authorId String @db.VarChar(255)
 }
 
-model BudgetPartition {
+model Section {
     id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     name        String   @db.VarChar(255)
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
-    dueDate     DateTime
-
     tags Tag[]
 
     authorId String @db.VarChar(255)
@@ -62,7 +60,7 @@ model Tag {
 
     payables         Payable[]
     receivables      Receivable[]
-    budgetPartitions BudgetPartition[]
+    sections Section[]
 }
 
 

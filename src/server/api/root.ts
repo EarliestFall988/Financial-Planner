@@ -3,6 +3,7 @@ import { payableRouter } from "./routers/payable";
 import { receivableRouter } from "./routers/receivable";
 import { aggregateRouter } from "./routers/aggregate";
 import { tagRouter } from "./routers/tag";
+import { sectionRouter } from "./routers/section";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   receivable: receivableRouter,
   aggregate: aggregateRouter,
   tag: tagRouter,
+  section: sectionRouter,
 });
 
 // export type definition of API
