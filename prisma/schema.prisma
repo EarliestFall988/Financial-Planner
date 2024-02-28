@@ -19,8 +19,6 @@ model Payable {
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
 
-    tags Tag[]
-
     authorId        String @db.VarChar(255)
 }
 
@@ -33,8 +31,6 @@ model Receivable {
     description  String   @db.VarChar(255)
     amount       Decimal  @db.Decimal(10, 2)
 
-    tags Tag[]
-
     authorId String @db.VarChar(255)
 }
 
@@ -45,22 +41,20 @@ model Section {
     name        String   @db.VarChar(255)
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
-    tags Tag[]
+
+    sectionGroupId String @db.VarChar(255)
+    sectionGroup SectionGroup @relation(fields: [sectionGroupId], references: [id])
 
     authorId String @db.VarChar(255)
 }
 
-model Tag {
+model SectionGroup {
     id          String   @id @default(uuid())
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     name        String   @db.VarChar(255)
     description String   @db.VarChar(255)
-    authorId    String   @db.VarChar(255)
+    authorId String @db.VarChar(255)
 
-    payables         Payable[]
-    receivables      Receivable[]
     sections Section[]
 }
-
-

@@ -58,10 +58,10 @@ const NewItemPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>New Payable | FinPlan</title>
+        <title>New Section | FinPlan</title>
       </Head>
       <main className="min-h-[100vh] bg-zinc-900">
-        <Header title="New Payable" back={goBack} />
+        <Header title="New Section" back={goBack} />
         <div className="flex flex-col items-center justify-center gap-5 py-10">
           <div className="flex w-11/12 flex-col gap-6 lg:w-2/3 xl:w-1/2">
             <div>
