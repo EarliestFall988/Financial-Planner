@@ -111,9 +111,9 @@ const NewItemPage: NextPage = () => {
             </div>
           </div>
         ) : (
-          <div ref={anim} >
+          <div ref={anim}>
             {isLoading ? (
-              <div className="min-h-[90vh] flex items-center justify-center">
+              <div className="flex min-h-[90vh] items-center justify-center">
                 <PropagateSpinner />
               </div>
             ) : (
@@ -156,6 +156,18 @@ const NewItemPage: NextPage = () => {
                         placeholder="amount in the transaction"
                         className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 "
                       />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-lg text-white">Date Created</p>
+                    <div className="flex items-center gap-1 rounded">
+                      <p className="w-full rounded px-2 font-semibold text-zinc-300 outline-none transition duration-100">
+                        {(data.createdAt.getMonth() + 1) +
+                          " / " +
+                          data.createdAt.getDate() +
+                          " / " +
+                          data.createdAt.getFullYear()}
+                      </p>
                     </div>
                   </div>
                   <div>

@@ -159,6 +159,18 @@ const NewItemPage: NextPage = () => {
                     </div>
                   </div>
                   <div>
+                    <p className="text-lg text-white">Date Created</p>
+                    <div className="flex items-center gap-1 rounded">
+                      <p className="w-full rounded px-2 font-semibold text-zinc-300 outline-none transition duration-100">
+                      {(data.createdAt.getMonth() + 1) +
+                          " / " +
+                          data.createdAt.getDate() +
+                          " / " +
+                          data.createdAt.getFullYear()}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
                     <p className="pb-1 text-lg text-white">Description</p>
                     <textarea
                       value={description}

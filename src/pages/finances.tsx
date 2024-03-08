@@ -113,20 +113,23 @@ const Page: NextPage = () => {
                     <p className="hidden text-sm text-zinc-300 lg:block">
                       {itm.data.description}
                     </p>
-                    <p className="text-sm text-zinc-300">
-                      ({dayjs(itm.data.updatedAt).fromNow()})
-                    </p>
                     {itm.type === "payable" && (
-                      <div>
+                      <div className="flex flex-col items-end">
                         <p className="text-lg font-semibold text-red-500">
                           (${itm.data.amount.toString()})
+                        </p>
+                        <p className="text-sm text-zinc-300">
+                          {dayjs(itm.data.updatedAt).fromNow()}
                         </p>
                       </div>
                     )}
                     {itm.type === "receivable" && (
-                      <div>
+                      <div className="flex flex-col items-end">
                         <p className="text-lg font-semibold text-green-500">
                           ${itm.data.amount.toString()}
+                        </p>
+                        <p className="text-sm text-zinc-300">
+                          {dayjs(itm.data.updatedAt).fromNow()}
                         </p>
                       </div>
                     )}
@@ -183,9 +186,9 @@ const Page: NextPage = () => {
             )}
           </div>
         </div>
-        <div className="fixed bottom-0 w-full border-t border-zinc-500 bg-zinc-900 rounded-t-lg p-2 md:hidden">
+        <div className="fixed bottom-0 w-full rounded-t-lg border-t border-zinc-500 bg-zinc-900 p-2 md:hidden">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2" >
+            <div className="flex gap-2">
               <Link
                 href="/payables/new"
                 className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
