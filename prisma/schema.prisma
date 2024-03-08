@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("SUPABASE_SESSION")
+    url      = env("SUPABASE_TRANSACTION")
 }
 
 model Payable {
