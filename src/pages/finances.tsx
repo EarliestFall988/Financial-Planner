@@ -1,12 +1,10 @@
 import { SignIn, UserButton, useClerk } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import {
-  ArrowDownIcon,
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
   Cog8ToothIcon,
   ExclamationTriangleIcon,
-  PlusIcon,
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import Head from "next/head";
@@ -50,10 +48,28 @@ const Page: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-[100vh] bg-zinc-900 text-white">
-        <div className="fixed top-0 z-10 flex w-full items-center justify-between bg-zinc-900/60 p-2 backdrop-blur-sm">
+        <div className="fixed top-0 z-10 flex w-full items-start justify-between bg-zinc-900/60 p-2 backdrop-blur-sm">
           <h2 className="text-lg font-semibold">Recent Activity</h2>
-          <div className="flex items-center justify-center gap-4">
+          <div className="hidden items-center justify-center gap-4 md:flex">
             <UserButton />
+          </div>
+          <div className="flex items-center justify-center gap-4 md:hidden">
+            {loadingBalance && <PropagateSpinner />}
+            {!loadingBalance && (
+              <div className="flex items-end justify-start gap-2">
+                <p className="text-sm text-zinc-400">Bal</p>
+                {(balance ?? 0) > 0 && (
+                  <p className="text-lg font-semibold text-green-500">
+                    {formatter.format(Math.abs(balance ?? 0))}
+                  </p>
+                )}
+                {(balance ?? 0) < 0 && (
+                  <p className="text-lg font-semibold text-red-500">
+                    ({formatter.format(Math.abs(balance ?? 0))})
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="mx-auto flex gap-2 p-2 lg:w-5/6 lg:p-0 xl:w-2/3">
@@ -204,12 +220,16 @@ const Page: NextPage = () => {
                 Fund
               </Link>
             </div>
-            <Link
+
+            <div className="block items-center justify-center gap-1 md:hidden">
+              <UserButton />
+            </div>
+            {/* <Link
               href={"/settings/payment-types"}
               className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
             >
               <Cog8ToothIcon className="h-5 w-5 text-white" />
-            </Link>
+            </Link> */}
           </div>
         </div>
       </main>
