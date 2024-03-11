@@ -21,7 +21,8 @@ model Payable {
     amount      Decimal  @db.Decimal(10, 2)
     date        DateTime @default(now())
 
-    tags Tag[]
+    Budget   Budget? @relation(fields: [budgetId], references: [id])
+    budgetId String?
 
     authorId String @db.VarChar(255)
 }
@@ -37,34 +38,23 @@ model Receivable {
     amount       Decimal  @db.Decimal(10, 2)
     date         DateTime @default(now())
 
-    tags Tag[]
+    Budget   Budget? @relation(fields: [budgetId], references: [id])
+    budgetId String? @db.VarChar(255)
 
     authorId String @db.VarChar(255)
 }
 
-model BudgetPartition {
-    id          String   @id @default(uuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    name        String   @db.VarChar(255)
-    description String   @db.VarChar(255)
-    amount      Decimal  @db.Decimal(10, 2)
-    dueDate     DateTime
+model Budget {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    tags Tag[]
+    name        String  @db.VarChar(255)
+    description String  @db.VarChar(255)
+    amount      Decimal @db.Decimal(10, 2)
+
+    Recievables Receivable[]
+    Payables    Payable[]
 
     authorId String @db.VarChar(255)
-}
-
-model Tag {
-    id          String   @id @default(uuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    name        String   @db.VarChar(255)
-    description String   @db.VarChar(255)
-    authorId    String   @db.VarChar(255)
-
-    payables         Payable[]
-    receivables      Receivable[]
-    budgetPartitions BudgetPartition[]
 }

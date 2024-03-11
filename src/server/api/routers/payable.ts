@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { z } from "zod";
+import { GetBrandImage } from "~/utils/brandImage";
 
 export const payableRouter = createTRPCRouter({
   getMyPayables: privateProcedure.query(async ({ ctx }) => {
@@ -73,6 +74,7 @@ export const payableRouter = createTRPCRouter({
         });
       }
 
+      // console.log("test: " + GetBrandImage(input.name));
       const res = await ctx.db.payable.create({
         data: {
           name: input.name,
