@@ -59,6 +59,7 @@ export const payableRouter = createTRPCRouter({
         amount: z.number(),
         description: z.string(),
         paymentTo: z.string(),
+        paymentDate: z.date(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -78,6 +79,7 @@ export const payableRouter = createTRPCRouter({
           amount: input.amount,
           description: input.description,
           payedTo: input.paymentTo,
+          date: input.paymentDate,
           authorId: user,
         },
       });
@@ -92,6 +94,7 @@ export const payableRouter = createTRPCRouter({
         amount: z.number(),
         description: z.string(),
         paymentTo: z.string(),
+        paymentDate: z.date(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -113,6 +116,7 @@ export const payableRouter = createTRPCRouter({
           amount: input.amount,
           payedTo: input.paymentTo,
           description: input.description,
+          date: input.paymentDate,
         },
       });
       return res;

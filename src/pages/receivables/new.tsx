@@ -3,7 +3,7 @@ import Head from "next/head";
 import { Header } from "~/components/header";
 import { api } from "~/utils/api";
 import { PropagateSpinner } from "~/components/PropagateSpinner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
@@ -33,6 +33,13 @@ const NewItemPage: NextPage = () => {
   const [paymentFrom, setPaymentFrom] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
+  const [paymentDate, setPaymentDate] = useState<string>("");
+
+  useEffect(() => {
+    if (paymentDate === "") {
+      setPaymentDate(new Date().toISOString().split("T")[0] ?? "");
+    }
+  }, [paymentDate]);
 
   const SubmitReceivable = () => {
     if (nameText.trim().length < 3) {
@@ -47,11 +54,14 @@ const NewItemPage: NextPage = () => {
 
     const amountNumber = +amount;
 
+    const date = new Date(paymentDate);
+
     mutate({
       name: nameText,
       amount: amountNumber,
       description: description,
       paymentFrom,
+      paymentDate: date,
     });
   };
 
@@ -98,6 +108,18 @@ const NewItemPage: NextPage = () => {
                 value={paymentFrom}
                 onChange={(e) => {
                   setPaymentFrom(e.target.value);
+                }}
+                placeholder="where is this money coming from?"
+                className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
+              />
+            </div>
+            <div>
+              <p className="pb-1 text-lg text-white">Date</p>
+              <input
+                type="date"
+                value={paymentDate}
+                onChange={(e) => {
+                  setPaymentDate(e.target.value);
                 }}
                 placeholder="where is this money coming from?"
                 className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
