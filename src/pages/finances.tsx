@@ -14,6 +14,8 @@ import { PropagateSpinner } from "~/components/PropagateSpinner";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { formatCurrency } from "~/utils/currency";
+import { payable, receivable } from "~/server/api/routers/aggregate";
 
 dayjs.extend(relativeTime);
 
@@ -21,6 +23,51 @@ const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
 });
+
+const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
+  return (
+    <Link
+      href={"/" + itm.type + "s/" + itm.data.id}
+      key={itm.data.id}
+      className="mt-2 flex items-center justify-between rounded border border-zinc-600 bg-zinc-700 p-2 transition duration-100 hover:bg-zinc-600"
+    >
+      <div>
+        <p className="text-lg font-semibold">{itm.data.name}</p>
+        {itm.type === "payable" && (
+          <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
+        )}
+
+        {itm.type === "receivable" && (
+          <p className="text-zinc-300">{itm.data.receivedFrom ?? ""}</p>
+        )}
+      </div>
+
+      <p className="hidden text-sm text-zinc-300 lg:block">
+        {itm.data.description}
+      </p>
+      {itm.type === "payable" && (
+        <div className="flex flex-col items-end">
+          <p className="text-lg font-semibold text-red-500">
+            ({formatCurrency.format(parseFloat(itm.data.amount.toString()))})
+          </p>
+          <p className="text-sm text-zinc-300">
+            {dayjs(itm.data.updatedAt).fromNow()}
+          </p>
+        </div>
+      )}
+      {itm.type === "receivable" && (
+        <div className="flex flex-col items-end">
+          <p className="text-lg font-semibold text-green-500">
+            ${itm.data.amount.toString()}
+          </p>
+          <p className="text-sm text-zinc-300">
+            {dayjs(itm.data.updatedAt).fromNow()}
+          </p>
+        </div>
+      )}
+    </Link>
+  );
+};
 
 const Page: NextPage = () => {
   const { user } = useClerk();
@@ -105,52 +152,7 @@ const Page: NextPage = () => {
             {!isLoading &&
               !isError &&
               data?.map((itm) => {
-                return (
-                  <Link
-                    href={"/" + itm.type + "s/" + itm.data.id}
-                    key={itm.data.id}
-                    className="mt-2 flex items-center justify-between rounded border border-zinc-600 bg-zinc-700 p-2 transition duration-100 hover:bg-zinc-600"
-                  >
-                    <div>
-                      <p className="text-lg font-semibold">{itm.data.name}</p>
-                      {itm.type === "payable" && (
-                        <p className="text-zinc-300">
-                          {itm.data.payedTo ?? ""}
-                        </p>
-                      )}
-
-                      {itm.type === "receivable" && (
-                        <p className="text-zinc-300">
-                          {itm.data.receivedFrom ?? ""}
-                        </p>
-                      )}
-                    </div>
-
-                    <p className="hidden text-sm text-zinc-300 lg:block">
-                      {itm.data.description}
-                    </p>
-                    {itm.type === "payable" && (
-                      <div className="flex flex-col items-end">
-                        <p className="text-lg font-semibold text-red-500">
-                          (${itm.data.amount.toString()})
-                        </p>
-                        <p className="text-sm text-zinc-300">
-                          {dayjs(itm.data.updatedAt).fromNow()}
-                        </p>
-                      </div>
-                    )}
-                    {itm.type === "receivable" && (
-                      <div className="flex flex-col items-end">
-                        <p className="text-lg font-semibold text-green-500">
-                          ${itm.data.amount.toString()}
-                        </p>
-                        <p className="text-sm text-zinc-300">
-                          {dayjs(itm.data.updatedAt).fromNow()}
-                        </p>
-                      </div>
-                    )}
-                  </Link>
-                );
+                return <TransactionItem key={itm.data.id} itm={itm} />;
               })}
 
             {isLoading && (

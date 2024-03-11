@@ -65,7 +65,7 @@ const NewItemPage: NextPage = () => {
         <div className="flex flex-col items-center justify-center gap-5 py-10">
           <div className="flex w-11/12 flex-col gap-6 lg:w-2/3 xl:w-1/2">
             <div>
-              <p className="pb-1 text-lg text-white">Name</p>
+              <p className="pb-1 text-lg text-white">Title</p>
               <input
                 type="text"
                 value={nameText}
@@ -73,18 +73,6 @@ const NewItemPage: NextPage = () => {
                   setNameText(e.target.value);
                 }}
                 placeholder="name of the transaction"
-                className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
-              />
-            </div>
-            <div>
-              <p className="pb-1 text-lg text-white">Payment From</p>
-              <input
-                type="text"
-                value={paymentFrom}
-                onChange={(e) => {
-                  setPaymentFrom(e.target.value);
-                }}
-                placeholder="where is this money coming from?"
                 className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
               />
             </div>
@@ -102,6 +90,18 @@ const NewItemPage: NextPage = () => {
                   className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 "
                 />
               </div>
+            </div>
+            <div>
+              <p className="pb-1 text-lg text-white">Payment From</p>
+              <input
+                type="text"
+                value={paymentFrom}
+                onChange={(e) => {
+                  setPaymentFrom(e.target.value);
+                }}
+                placeholder="where is this money coming from?"
+                className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
+              />
             </div>
             <div>
               <p className="pb-1 text-lg text-white">Description</p>

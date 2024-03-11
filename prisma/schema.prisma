@@ -11,27 +11,31 @@ datasource db {
 }
 
 model Payable {
-    id          String   @id @default(uuid())
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     name        String   @db.VarChar(255)
     payedTo     String   @db.VarChar(255)
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
+    date        DateTime @default(now())
 
     tags Tag[]
 
-    authorId        String @db.VarChar(255)
+    authorId String @db.VarChar(255)
 }
 
 model Receivable {
-    id           String   @id @default(uuid())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     name         String   @db.VarChar(255)
     receivedFrom String   @db.VarChar(255)
     description  String   @db.VarChar(255)
     amount       Decimal  @db.Decimal(10, 2)
+    date         DateTime @default(now())
 
     tags Tag[]
 
@@ -64,5 +68,3 @@ model Tag {
     receivables      Receivable[]
     budgetPartitions BudgetPartition[]
 }
-
-

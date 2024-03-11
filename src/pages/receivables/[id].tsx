@@ -132,18 +132,6 @@ const NewItemPage: NextPage = () => {
                     />
                   </div>
                   <div>
-                    <p className="pb-1 text-lg text-white">Payment From</p>
-                    <input
-                      type="text"
-                      value={paymentFrom}
-                      onChange={(e) => {
-                        setPaymentFrom(e.target.value);
-                      }}
-                      placeholder="name of the transaction"
-                      className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
-                    />
-                  </div>
-                  <div>
                     <p className="pb-1 text-lg text-white">Amount</p>
                     <div className="flex  items-center gap-1 rounded bg-zinc-800 pl-1 hover:ring hover:ring-blue-500 focus:ring-1">
                       <p className="text-lg text-zinc-400">$</p>
@@ -158,6 +146,19 @@ const NewItemPage: NextPage = () => {
                       />
                     </div>
                   </div>
+                  <div>
+                    <p className="pb-1 text-lg text-white">Payment From</p>
+                    <input
+                      type="text"
+                      value={paymentFrom}
+                      onChange={(e) => {
+                        setPaymentFrom(e.target.value);
+                      }}
+                      placeholder="name of the transaction"
+                      className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
+                    />
+                  </div>
+                  
                   <div>
                     <p className="text-lg text-white">Date Created</p>
                     <div className="flex items-center gap-1 rounded">
