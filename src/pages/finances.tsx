@@ -1,6 +1,7 @@
 import { SignIn, UserButton, useClerk } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import {
+  AdjustmentsVerticalIcon,
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
   ExclamationTriangleIcon,
@@ -104,7 +105,7 @@ const MobileNav = () => {
   return (
     <div className="fixed bottom-0 w-full rounded-t-lg border-t border-zinc-500 bg-zinc-900 p-2 md:hidden">
       <div className="flex items-center justify-between">
-        <div className="flex gap-2">
+        <div className="flex w-full items-center justify-around gap-2">
           <Link
             href="/payables/new"
             className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
@@ -119,11 +120,18 @@ const MobileNav = () => {
             <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-white" />
             Fund
           </Link>
+          <Link
+            href="/my-budget/all"
+            className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+          >
+            <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
+            Budget
+          </Link>
         </div>
 
-        <div className="block items-center justify-center gap-1 md:hidden">
+        {/* <div className="block items-center justify-center gap-1 md:hidden">
           <UserButton />
-        </div>
+        </div> */}
         {/* <Link
               href={"/settings/payment-types"}
               className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
@@ -153,13 +161,13 @@ const SideNav = () => {
         <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-white" />
         Fund
       </Link>
-      {/* <Link
-        href={"/settings/payment-types"}
+      <Link
+        href="/my-budget/all"
         className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
       >
-        <Cog8ToothIcon className="h-5 w-5 text-white" />
-        Settings
-      </Link> */}
+        <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
+        Budget
+      </Link>
     </div>
   );
 };

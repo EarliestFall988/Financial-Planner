@@ -21,7 +21,7 @@ model Payable {
     amount      Decimal  @db.Decimal(10, 2)
     date        DateTime @default(now())
 
-    Budget   Budget? @relation(fields: [budgetId], references: [id])
+    Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String?
 
     authorId String @db.VarChar(255)
@@ -38,13 +38,13 @@ model Receivable {
     amount       Decimal  @db.Decimal(10, 2)
     date         DateTime @default(now())
 
-    Budget   Budget? @relation(fields: [budgetId], references: [id])
+    Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String? @db.VarChar(255)
 
     authorId String @db.VarChar(255)
 }
 
-model Budget {
+model Split {
     id        String   @id @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -56,5 +56,21 @@ model Budget {
     Recievables Receivable[]
     Payables    Payable[]
 
+    authorId String  @db.VarChar(255)
+    Group    Group?  @relation(fields: [groupId], references: [id])
+    groupId  String?
+}
+
+model Group {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name        String @db.VarChar(255)
+    description String @db.VarChar(255)
+    amount      Decimal @db.Decimal(10, 2)
+
     authorId String @db.VarChar(255)
+
+    Splits Split[]
 }

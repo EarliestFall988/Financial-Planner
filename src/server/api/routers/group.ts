@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { z } from "zod";
 
-export const tagRouter = createTRPCRouter({
-  all: privateProcedure.query(async ({ ctx }) => {
+export const groupRouter = createTRPCRouter({
+  getAll: privateProcedure.query(async ({ ctx }) => {
     const userId = ctx.userId;
 
     if (!userId) {
@@ -12,9 +12,12 @@ export const tagRouter = createTRPCRouter({
       });
     }
 
-    const res = await ctx.db.tag.findMany({
+    const res = await ctx.db.group.findMany({
       where: {
         authorId: userId,
+      },
+      include: {
+        Splits: true,
       },
       orderBy: {
         updatedAt: "desc",
@@ -24,8 +27,7 @@ export const tagRouter = createTRPCRouter({
     return res;
   }),
 
-
-  single: privateProcedure
+  getSingle: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const userId = ctx.userId;
@@ -36,7 +38,7 @@ export const tagRouter = createTRPCRouter({
         });
       }
 
-      const res = await ctx.db.tag.findUnique({
+      const res = await ctx.db.group.findUnique({
         where: {
           id: input.id,
           authorId: userId,
@@ -56,6 +58,7 @@ export const tagRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
+        amount: z.number(),
         description: z.string(),
       }),
     )
@@ -70,9 +73,10 @@ export const tagRouter = createTRPCRouter({
         });
       }
 
-      const res = await ctx.db.tag.create({
+      const res = await ctx.db.group.create({
         data: {
           name: input.name,
+          amount: input.amount,
           description: input.description,
           authorId: user,
         },
@@ -87,7 +91,6 @@ export const tagRouter = createTRPCRouter({
         name: z.string(),
         amount: z.number(),
         description: z.string(),
-        paymentTo: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -99,13 +102,14 @@ export const tagRouter = createTRPCRouter({
         });
       }
 
-      const res = await ctx.db.tag.update({
+      const res = await ctx.db.group.update({
         where: {
           id: input.id,
           authorId: user,
         },
         data: {
           name: input.name,
+          amount: input.amount,
           description: input.description,
         },
       });
@@ -123,7 +127,7 @@ export const tagRouter = createTRPCRouter({
         });
       }
 
-      const res = await ctx.db.tag.delete({
+      const res = await ctx.db.group.delete({
         where: {
           id: input,
           authorId: user,
