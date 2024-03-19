@@ -40,6 +40,9 @@ export const receivableRouter = createTRPCRouter({
           id: input.id,
           authorId: userId,
         },
+        include: {
+          Budget: true,
+        },
       });
 
       if (res?.authorId !== userId) {
@@ -59,6 +62,7 @@ export const receivableRouter = createTRPCRouter({
         description: z.string(),
         paymentFrom: z.string(),
         paymentDate: z.date(),
+        budgetSplitId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -80,6 +84,11 @@ export const receivableRouter = createTRPCRouter({
           receivedFrom: input.paymentFrom,
           date: input.paymentDate,
           authorId: user,
+          Budget: {
+            connect: {
+              id: input.budgetSplitId,
+            },
+          },
         },
       });
       return res;
@@ -94,6 +103,7 @@ export const receivableRouter = createTRPCRouter({
         description: z.string(),
         paymentFrom: z.string(),
         paymentDate: z.date(),
+        budgetSplitId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -104,6 +114,18 @@ export const receivableRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
         });
       }
+
+      await ctx.db.receivable.update({
+        where: {
+          id: input.id,
+          authorId: user,
+        },
+        data: {
+          Budget: {
+            disconnect: true,
+          },
+        },
+      });
 
       const res = await ctx.db.receivable.update({
         where: {
@@ -116,6 +138,11 @@ export const receivableRouter = createTRPCRouter({
           receivedFrom: input.paymentFrom,
           description: input.description,
           date: input.paymentDate,
+          Budget: {
+            connect: {
+              id: input.budgetSplitId,
+            },
+          },
         },
       });
       return res;
@@ -131,6 +158,18 @@ export const receivableRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
         });
       }
+
+      await ctx.db.receivable.update({
+        where: {
+          id: input,
+          authorId: user,
+        },
+        data: {
+          Budget: {
+            disconnect: true,
+          },
+        },
+      });
 
       const res = await ctx.db.receivable.delete({
         where: {

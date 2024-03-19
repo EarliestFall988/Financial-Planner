@@ -13,7 +13,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-
 const NewItemPage: NextPage = () => {
   const { back, query } = useRouter();
 
@@ -32,6 +31,8 @@ const NewItemPage: NextPage = () => {
   });
 
   const [anim] = useAutoAnimate();
+
+  const { data: splitData } = api.split.getAll.useQuery();
 
   const { mutate: deletePayable, isLoading: isDeleting } =
     api.payable.deletePayable.useMutation({
@@ -60,6 +61,7 @@ const NewItemPage: NextPage = () => {
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [paymentDate, setPaymentDate] = useState<string>("");
+  const [allocation, setAllocation] = useState<string>("");
 
   useMemo(() => {
     if (data) {
@@ -68,6 +70,7 @@ const NewItemPage: NextPage = () => {
       setAmount(data.amount.toString());
       setPaymentTo(data.payedTo.toString());
       setPaymentDate(data.date.toISOString().split("T")[0] ?? "");
+      setAllocation(data.Budget?.id ?? "");
     }
   }, [data]);
 
@@ -82,6 +85,11 @@ const NewItemPage: NextPage = () => {
       return;
     }
 
+    if (allocation === "") {
+      toast.error("Please select a Budget");
+      return;
+    }
+
     const amountNumber = +amount;
 
     saveChanges({
@@ -91,6 +99,7 @@ const NewItemPage: NextPage = () => {
       description: description,
       paymentTo,
       paymentDate: new Date(paymentDate),
+      budgetSplitId: allocation,
     });
   };
 
@@ -151,6 +160,25 @@ const NewItemPage: NextPage = () => {
                     </div>
                   </div>
                   <div>
+                    <p className="pb-1 text-lg text-white">Budget</p>
+                    <select
+                      value={allocation}
+                      className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
+                      onChange={(e) => {
+                        setAllocation(e.target.value);
+                      }}
+                    >
+                      <option value="">Select an allocation</option>
+                      {splitData?.map((itm) => {
+                        return (
+                          <option key={itm.id} value={itm.id}>
+                            {itm.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                  <div>
                     <p className="pb-1 text-lg text-white">Payment To</p>
                     <input
                       type="text"
@@ -178,7 +206,8 @@ const NewItemPage: NextPage = () => {
                     <p className="text-lg text-white">Date Created</p>
                     <div className="flex items-center gap-1 rounded">
                       <p className="w-full rounded px-2 font-semibold text-zinc-300 outline-none transition duration-100">
-                        {(data.createdAt.getMonth() + 1) +
+                        {data.createdAt.getMonth() +
+                          1 +
                           " / " +
                           data.createdAt.getDate() +
                           " / " +

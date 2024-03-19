@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { z } from "zod";
-import { GetBrandImage } from "~/utils/brandImage";
+// import { GetBrandImage } from "~/utils/brandImage";
 
 export const payableRouter = createTRPCRouter({
   getMyPayables: privateProcedure.query(async ({ ctx }) => {
@@ -25,7 +25,6 @@ export const payableRouter = createTRPCRouter({
     return res;
   }),
 
-
   getSinglePayable: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -41,6 +40,9 @@ export const payableRouter = createTRPCRouter({
         where: {
           id: input.id,
           authorId: userId,
+        },
+        include: {
+          Budget: true,
         },
       });
 
@@ -61,6 +63,7 @@ export const payableRouter = createTRPCRouter({
         description: z.string(),
         paymentTo: z.string(),
         paymentDate: z.date(),
+        budgetSplitId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -83,6 +86,11 @@ export const payableRouter = createTRPCRouter({
           payedTo: input.paymentTo,
           date: input.paymentDate,
           authorId: user,
+          Budget: {
+            connect: {
+              id: input.budgetSplitId,
+            },
+          },
         },
       });
       return res;
@@ -97,6 +105,7 @@ export const payableRouter = createTRPCRouter({
         description: z.string(),
         paymentTo: z.string(),
         paymentDate: z.date(),
+        budgetSplitId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -107,6 +116,19 @@ export const payableRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
         });
       }
+
+      //disconnect the payable from the budget
+      await ctx.db.payable.update({
+        where: {
+          id: input.id,
+          authorId: user,
+        },
+        data: {
+          Budget: {
+            disconnect: true,
+          },
+        },
+      });
 
       const res = await ctx.db.payable.update({
         where: {
@@ -119,6 +141,11 @@ export const payableRouter = createTRPCRouter({
           payedTo: input.paymentTo,
           description: input.description,
           date: input.paymentDate,
+          Budget: {
+            connect: {
+              id: input.budgetSplitId,
+            },
+          },
         },
       });
       return res;
@@ -134,6 +161,19 @@ export const payableRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
         });
       }
+
+      //disconnect the payable from the budget
+      await ctx.db.payable.update({
+        where: {
+          id: input,
+          authorId: user,
+        },
+        data: {
+          Budget: {
+            disconnect: true,
+          },
+        },
+      });
 
       const res = await ctx.db.payable.delete({
         where: {

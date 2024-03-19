@@ -66,9 +66,11 @@ model Group {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    name        String @db.VarChar(255)
-    description String @db.VarChar(255)
+    name        String  @db.VarChar(255)
+    description String  @db.VarChar(255)
     amount      Decimal @db.Decimal(10, 2)
+
+    order Int @default(0)
 
     authorId String @db.VarChar(255)
 

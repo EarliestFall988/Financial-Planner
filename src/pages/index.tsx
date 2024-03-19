@@ -15,7 +15,7 @@ export default function Home() {
       <Head>
         <title>Landing Page | Finance Pro</title>
       </Head>
-      <div className="h-[100vh] bg-zinc-800">
+      <main className="h-[100vh] bg-zinc-800">
         {user && (
           <div className="flex h-10 justify-end p-2">
             <UserButton />
@@ -38,7 +38,7 @@ export default function Home() {
             </div>
           )}
         </div>
-      </div>
+      </main>
     </>
   );
 }

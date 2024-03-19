@@ -19,6 +19,8 @@ const NewItemPage: NextPage = () => {
     }
   };
 
+  const { data: splitData } = api.split.getAll.useQuery();
+
   const { mutate, isLoading } = api.receivable.createReceivable.useMutation({
     onSuccess: () => {
       toast.success("Payable created successfully");
@@ -34,6 +36,7 @@ const NewItemPage: NextPage = () => {
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [paymentDate, setPaymentDate] = useState<string>("");
+  const [allocation, setAllocation] = useState<string>("");
 
   useEffect(() => {
     if (paymentDate === "") {
@@ -51,6 +54,11 @@ const NewItemPage: NextPage = () => {
       toast.error("Amount must be a number");
       return;
     }
+    
+    if (allocation === "") {
+      toast.error("Please select a Budget");
+      return;
+    }
 
     const amountNumber = +amount;
 
@@ -62,6 +70,7 @@ const NewItemPage: NextPage = () => {
       description: description,
       paymentFrom,
       paymentDate: date,
+      budgetSplitId: allocation,
     });
   };
 
@@ -100,6 +109,25 @@ const NewItemPage: NextPage = () => {
                   className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 "
                 />
               </div>
+            </div>
+            <div>
+              <p className="pb-1 text-lg text-white">Budget</p>
+              <select
+                value={allocation}
+                className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
+                onChange={(e) => {
+                  setAllocation(e.target.value);
+                }}
+              >
+                <option value="">Select an allocation</option>
+                {splitData?.map((itm) => {
+                  return (
+                    <option key={itm.id} value={itm.id}>
+                      {itm.name}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
             <div>
               <p className="pb-1 text-lg text-white">Payment From</p>
