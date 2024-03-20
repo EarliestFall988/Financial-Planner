@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
-import type { Payable, Receivable } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { type Payable, type Receivable } from "@prisma/client";
+// import { SplitTotal } from "../types"; // Add the missing import statement for the SplitTotal type
 
 export type payable = {
   type: "payable";
@@ -39,6 +39,17 @@ const sortPayablesAndReceivablesByDate = (
     return a.data.updatedAt < b.data.updatedAt ? 1 : -1;
   });
   return all;
+};
+
+export type SplitTotal = {
+  amount: number;
+  spent: number;
+  name: string;
+  budgetSplitId: string;
+};
+
+type Amount = {
+  amount: number;
 };
 
 export const aggregateRouter = createTRPCRouter({
@@ -109,5 +120,66 @@ export const aggregateRouter = createTRPCRouter({
     }, 0);
 
     return totalReceivables - totalPayables;
+  }),
+
+  getTotalSpent: privateProcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    if (!userId) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+      });
+    }
+
+    const date = new Date();
+    const thisMonth = date.getMonth() + 1;
+    const thisYear = date.getFullYear();
+
+    const result = await ctx.db.$queryRawUnsafe<Amount[]>(
+      `
+    SELECT DISTINCT SUM("Payable"."amount") AS amount
+    FROM "Payable" 
+    WHERE EXTRACT(MONTH FROM "Payable"."date") = $1 AND EXTRACT(YEAR FROM "Payable"."date") = $2 AND "Payable"."authorId" = $3
+    `,
+      thisMonth,
+      thisYear,
+      userId,
+    );
+
+    const a = result[0]?.amount ?? 0;
+
+    console.log(a);
+
+    return a;
+  }),
+
+  getTotalBySplit: privateProcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    if (!userId) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+      });
+    }
+
+    const date = new Date();
+    const thisMonth = date.getMonth() + 1;
+    const thisYear = date.getFullYear();
+
+    const result = await ctx.db.$queryRawUnsafe<SplitTotal[]>(
+      `
+    SELECT DISTINCT (SUM(COALESCE("Receivable"."amount", 0)) + SUM(COALESCE("Split"."amount", 0)) - SUM(COALESCE("Payable"."amount",0))) AS amount, 
+            SUM(COALESCE("Payable"."amount",0)) AS spent, COALESCE("Split"."name", 'Other') as name, COALESCE("Payable"."budgetId", 'o') as budgetId
+    FROM "Payable" FULL OUTER JOIN "Split" ON "Split"."id"="Payable"."budgetId" FULL OUTER JOIN "Receivable" ON "Receivable"."budgetId"="Split"."id"
+    WHERE EXTRACT(MONTH FROM "Payable"."date") = $1 AND EXTRACT(YEAR FROM "Payable"."date") = $2 AND "Payable"."authorId" = $3
+    GROUP BY "Split"."name", "Payable"."budgetId"
+    ORDER BY "amount" ASC;
+    `,
+      thisMonth,
+      thisYear,
+      userId,
+    );
+
+    return result;
   }),
 });
