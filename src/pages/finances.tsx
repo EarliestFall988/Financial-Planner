@@ -2,6 +2,7 @@ import { SignIn, UserButton, useClerk } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import {
   AdjustmentsVerticalIcon,
+  ArrowDownTrayIcon,
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
   ExclamationTriangleIcon,
@@ -167,7 +168,7 @@ const MobileNav = () => {
             <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
             Budget
           </Link>
-        </div>        
+        </div>
       </div>
     </div>
   );
@@ -183,7 +184,7 @@ const MobilePopover: React.FC<{
       <Popover.Trigger asChild>{children}</Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="data-[state=open]:data-[side=top]:animate-slideDownAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade w-[260px] rounded border border-zinc-800 bg-zinc-950/70 backdrop-blur p-5 outline-none will-change-[transform,opacity]"
+          className="w-[260px] rounded border border-zinc-800 bg-zinc-950/70 p-5 outline-none backdrop-blur will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade"
           sideOffset={9}
         >
           <div className="flex flex-col">
@@ -204,6 +205,14 @@ const MobilePopover: React.FC<{
                 ></SplitItem>
               );
             })}
+            <div className="my-4 border-b border-zinc-800" />
+            <Link
+              href="/export"
+              className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800 text-white"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5 text-white" />
+              Export
+            </Link>
           </div>
 
           <Popover.Arrow className="fill-zinc-950" />
@@ -237,6 +246,13 @@ const SideNav = () => {
       >
         <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
         Budget
+      </Link>
+      <Link
+        href="/export"
+        className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+      >
+        <ArrowDownTrayIcon className="h-5 w-5 text-white" />
+        Export
       </Link>
     </div>
   );

@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { type Payable, type Receivable } from "@prisma/client";
+import { z } from "zod";
 // import { SplitTotal } from "../types"; // Add the missing import statement for the SplitTotal type
 
 export type payable = {
@@ -182,4 +183,67 @@ export const aggregateRouter = createTRPCRouter({
 
     return result;
   }),
+
+  getDataToExport: privateProcedure
+    .input(
+      z.object({
+        includedBudgetPartitionIds: z.string().array(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const userId = ctx.userId;
+
+      if (!userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+        });
+      }
+
+      const payables = await ctx.db.payable.findMany({
+        where: {
+          AND: {
+            authorId: userId,
+            budgetId: {
+              in: input.includedBudgetPartitionIds,
+            },
+          },
+        },
+        include: {
+          Budget: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+
+      const receivables = await ctx.db.receivable.findMany({
+        where: {
+          AND: {
+            authorId: userId,
+            budgetId: {
+              in: input.includedBudgetPartitionIds,
+            },
+          },
+        },
+        include: {
+          Budget: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+
+      return {
+        payables,
+        receivables,
+      };
+    }),
 });
