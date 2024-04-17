@@ -139,7 +139,7 @@ export const aggregateRouter = createTRPCRouter({
     const result = await ctx.db.$queryRawUnsafe<Amount[]>(
       `
     SELECT DISTINCT SUM("Payable"."amount") AS amount
-    FROM "Payable" 
+    FROM "Payable"  
     WHERE EXTRACT(MONTH FROM "Payable"."date") = $1 AND EXTRACT(YEAR FROM "Payable"."date") = $2 AND "Payable"."authorId" = $3
     `,
       thisMonth,

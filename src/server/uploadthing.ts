@@ -2,8 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 import { UploadThingError } from "uploadthing/server";
-import { api } from "~/utils/api";
-import { createTRPCContext } from "./api/trpc";
 import { getAuth } from "@clerk/nextjs/server";
 
 import { db } from "~/server/db";
