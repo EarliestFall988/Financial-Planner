@@ -43,6 +43,11 @@ export const payableRouter = createTRPCRouter({
         },
         include: {
           Budget: true,
+          uploadedFiles: {
+            select: {
+              key: true,
+            }
+          }
         },
       });
 
@@ -64,6 +69,7 @@ export const payableRouter = createTRPCRouter({
         paymentTo: z.string(),
         paymentDate: z.date(),
         budgetSplitId: z.string(),
+        fileKeys: z.string().array(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -76,6 +82,15 @@ export const payableRouter = createTRPCRouter({
           code: "UNAUTHORIZED",
         });
       }
+
+      const files = await ctx.db.uploadedFile.findMany({
+        where: {
+          key: {
+            in: input.fileKeys,
+          },
+          authorId: user,
+        },
+      });
 
       // console.log("test: " + GetBrandImage(input.name));
       const res = await ctx.db.payable.create({
@@ -91,6 +106,11 @@ export const payableRouter = createTRPCRouter({
               id: input.budgetSplitId,
             },
           },
+          uploadedFiles: {
+            connect: files.map((file) => ({
+              id: file.id,
+            })),
+          }
         },
       });
       return res;
@@ -106,6 +126,7 @@ export const payableRouter = createTRPCRouter({
         paymentTo: z.string(),
         paymentDate: z.date(),
         budgetSplitId: z.string(),
+        fileKeys: z.string().array()
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -117,6 +138,18 @@ export const payableRouter = createTRPCRouter({
         });
       }
 
+
+      const files = await ctx.db.uploadedFile.findMany({
+        where: {
+          key: {
+            in: input.fileKeys,
+          },
+          authorId: user,
+        },
+      });
+
+
+
       //disconnect the payable from the budget
       await ctx.db.payable.update({
         where: {
@@ -127,8 +160,14 @@ export const payableRouter = createTRPCRouter({
           Budget: {
             disconnect: true,
           },
+          uploadedFiles: {
+            disconnect: files.map((file) => ({
+              id: file.id,
+            })),
+          },
         },
       });
+
 
       const res = await ctx.db.payable.update({
         where: {
@@ -146,9 +185,16 @@ export const payableRouter = createTRPCRouter({
               id: input.budgetSplitId,
             },
           },
+          uploadedFiles: {
+            connect: files.map((file) => ({
+              id: file.id,
+            })),
+          }
         },
       });
+
       return res;
+
     }),
 
   deletePayable: privateProcedure
@@ -162,6 +208,13 @@ export const payableRouter = createTRPCRouter({
         });
       }
 
+      const files = await ctx.db.uploadedFile.findMany({
+        where: {
+          payableId: input,
+          authorId: user,
+        },
+      });
+
       //disconnect the payable from the budget
       await ctx.db.payable.update({
         where: {
@@ -172,8 +225,14 @@ export const payableRouter = createTRPCRouter({
           Budget: {
             disconnect: true,
           },
+          uploadedFiles: {
+            disconnect: files.map((file) => ({
+              id: file.id,
+            })),
+          }
         },
       });
+
 
       const res = await ctx.db.payable.delete({
         where: {

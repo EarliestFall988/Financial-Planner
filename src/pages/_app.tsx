@@ -80,8 +80,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
       </Head>
       <ToastContainer position="bottom-center" theme="dark" />
-      <ClerkProvider>
-        <Component {...pageProps} />
+      <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+        <Component {...pageProps}  />
       </ClerkProvider>
     </>
   );

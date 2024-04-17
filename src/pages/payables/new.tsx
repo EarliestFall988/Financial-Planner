@@ -6,7 +6,8 @@ import { PropagateSpinner } from "~/components/PropagateSpinner";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { UploadButton } from "~/utils/uploadthing";
 
 const NewItemPage: NextPage = () => {
   const { back } = useRouter();
@@ -37,6 +38,12 @@ const NewItemPage: NextPage = () => {
   const [amount, setAmount] = useState<string>("");
   const [paymentDate, setPaymentDate] = useState<string>("");
   const [allocation, setAllocation] = useState<string>("");
+  const [fileKeys, setFileKeys] = useState<string[]>([]);
+
+
+  const { data: fileData } = api.image.findImageWithKeys.useQuery({
+    keys: fileKeys,
+  });
 
   useEffect(() => {
     if (paymentDate === "") {
@@ -69,6 +76,7 @@ const NewItemPage: NextPage = () => {
       paymentTo,
       paymentDate: new Date(paymentDate),
       budgetSplitId: allocation,
+      fileKeys
     });
   };
 
@@ -161,6 +169,63 @@ const NewItemPage: NextPage = () => {
                 placeholder="notes about this transaction"
                 className="w-full rounded bg-zinc-800 p-2 text-white outline-none transition duration-100 hover:ring hover:ring-blue-500 focus:ring-1"
               />
+            </div>
+            <div>
+              <p className="pb-1 text-lg text-white">Add Documents</p>
+
+              <div className="flex flex-col gap-2">
+                {fileData ? fileData.map((f, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 bg-zinc-800 p-2 rounded"
+                    >
+
+                      <a
+                        href={f.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <p className="text-lg text-white border-b">{f.name}</p>
+                      </a>
+                      <button
+                        onClick={() => {
+                          setFileKeys((prev) => {
+                            return prev.filter((_, idx) => idx !== i);
+                          });
+                        }}
+                        className="p-1 rounded text-red-500"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                  );
+                }) : (<div>
+                  <PropagateSpinner />
+                </div>)}
+              </div>
+
+              <div className="pt-6">
+
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res) => {
+                    // Do something with the response
+                    console.log("Files: ", res);
+
+                    setFileKeys([...fileKeys, ...res.map(f => f.key)]);
+
+                    toast.success("File uploaded successfully");
+                  }}
+                  onUploadError={(error: Error) => {
+                    // Do something with the error.
+                    // alert(`ERROR! ${error.message}`);
+                    toast.error("Error uploading file: " + error.message);
+                  }}
+                />
+              </div>
             </div>
             <div>
               <button

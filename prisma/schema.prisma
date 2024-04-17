@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("SUPABASE_TRANSACTION")
+    url      = env("SUPABASE_SESSION")
 }
 
 model Payable {
@@ -20,6 +20,8 @@ model Payable {
     description String   @db.VarChar(255)
     amount      Decimal  @db.Decimal(10, 2)
     date        DateTime @default(now())
+
+    uploadedFiles UploadedFile[]
 
     Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String?
@@ -37,6 +39,8 @@ model Receivable {
     description  String   @db.VarChar(255)
     amount       Decimal  @db.Decimal(10, 2)
     date         DateTime @default(now())
+
+    uploadedFiles UploadedFile[]
 
     Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String? @db.VarChar(255)
@@ -75,4 +79,24 @@ model Group {
     authorId String @db.VarChar(255)
 
     Splits Split[]
+}
+
+model UploadedFile {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name String @db.VarChar(255)
+    key  String @db.VarChar(255)
+    type String @db.VarChar(255)
+    size Int    @db.Integer
+    url  String @db.VarChar(255)
+
+    authorId String @db.VarChar(255)
+
+    Payable   Payable? @relation(fields: [payableId], references: [id])
+    payableId String?
+
+    Receivable   Receivable? @relation(fields: [receivableId], references: [id])
+    receivableId String?
 }
