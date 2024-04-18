@@ -6,6 +6,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
   ExclamationTriangleIcon,
+  PaperClipIcon,
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import Head from "next/head";
@@ -37,9 +38,21 @@ const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
       className=" flex items-center justify-between border-b border-zinc-800 p-2 transition duration-100 hover:bg-zinc-800"
     >
       <div>
-        <p className="text-lg font-semibold">{itm.data.name}</p>
         {itm.type === "payable" && (
-          <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
+          <>
+            <div className="flex items-center justify-start gap-1">
+              {itm.data.uploadedFiles.length > 0 && (
+                <PaperClipIcon className="h-3 w-3 text-zinc-300" />
+              )}
+              <p className="text-lg font-semibold">{itm.data.name}</p>
+
+              <p className="flex text-xs text-blue-400 border-blue-500 rounded-full px-2 border">{itm.data.Budget?.name}</p>
+
+            </div>
+            <div className="gap-2 flex items-center justify-start">
+              <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
+            </div>
+          </>
         )}
 
         {itm.type === "receivable" && (

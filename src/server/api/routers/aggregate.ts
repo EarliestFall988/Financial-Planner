@@ -1,12 +1,14 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
-import { type Payable, type Receivable } from "@prisma/client";
+import { type Prisma, type Receivable } from "@prisma/client";
 import { z } from "zod";
 // import { SplitTotal } from "../types"; // Add the missing import statement for the SplitTotal type
 
+type PayablesWithUploadedFilesType = Prisma.PayableGetPayload<{ include: { uploadedFiles: true, Budget: true } }>
+
 export type payable = {
   type: "payable";
-  data: Payable;
+  data: PayablesWithUploadedFilesType;
 };
 
 export type receivable = {
@@ -15,7 +17,7 @@ export type receivable = {
 };
 
 const sortPayablesAndReceivablesByDate = (
-  payables: Payable[],
+  payables: PayablesWithUploadedFilesType[],
   receivables: Receivable[],
 ) => {
   const ps = [] as payable[];
@@ -75,6 +77,10 @@ export const aggregateRouter = createTRPCRouter({
     const payables = await ctx.db.payable.findMany({
       where: {
         authorId: userId,
+      },
+      include: {
+        uploadedFiles: true,
+        Budget: true
       },
       orderBy: {
         updatedAt: "desc",
