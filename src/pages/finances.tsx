@@ -24,33 +24,68 @@ import type {
   receivable,
 } from "~/server/api/routers/aggregate";
 
+import * as Tooltip from "@radix-ui/react-tooltip";
+
 import * as Popover from "@radix-ui/react-popover";
 import { type ReactNode } from "react";
 
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
 
+const TransactionDataTooltip: React.FC<{
+  children: ReactNode;
+  name: string;
+}> = ({ children, name }) => {
+  return (
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="rounded bg-blue-600/20 border-zinc-500 text-white backdrop-blur-lg p-2 data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade  data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade">
+            <p className="text-lg">{name}</p>
+            <Tooltip.Arrow className="fill-blue-600/40" />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  );
+};
+
 const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
   return (
     <Link
       href={"/" + itm.type + "s/" + itm.data.id}
       key={itm.data.id}
-      className=" flex items-center justify-between border-b border-zinc-800 p-2 transition duration-100 hover:bg-zinc-800"
+      className={`flex items-center justify-between ${
+        itm.type === "receivable"
+          ? "rounded-xl bg-gradient-to-r from-green-900/50 to-blue-900/50"
+          : "border-b border-zinc-800"
+      }  p-2 transition duration-100 hover:bg-zinc-800`}
     >
-      <div>
+      <div className="w-3/4 md:w-1/3">
         {itm.type === "payable" && (
           <>
-            <div className="flex items-center justify-start gap-1">
+            <div className="flex w-full items-center justify-start gap-1">
+              <TransactionDataTooltip name={itm.data.name}>
+                <div className="max-w-[70%] md:max-w-52">
+                  <p className="truncate text-lg font-semibold">
+                    {itm.data.name}
+                  </p>
+                </div>
+              </TransactionDataTooltip>
+              {itm.data.Budget && (
+                <div className="flex max-w-14 rounded-full bg-blue-800 px-1 md:max-w-28">
+                  <p className="truncate text-ellipsis whitespace-nowrap text-xs text-white">
+                    {itm.data.Budget?.name}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-start gap-2">
+              <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
               {itm.data.uploadedFiles.length > 0 && (
                 <PaperClipIcon className="h-3 w-3 text-zinc-300" />
               )}
-              <p className="text-lg font-semibold">{itm.data.name}</p>
-
-              <p className="flex text-xs text-blue-400 border-blue-500 rounded-full px-2 border">{itm.data.Budget?.name}</p>
-
-            </div>
-            <div className="gap-2 flex items-center justify-start">
-              <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
             </div>
           </>
         )}
@@ -60,9 +95,11 @@ const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
         )}
       </div>
 
-      <p className="hidden text-sm text-zinc-300 lg:block">
-        {itm.data.description}
-      </p>
+      <TransactionDataTooltip name={itm.data.description}>
+        <p className="hidden h-full w-1/3 truncate text-sm text-zinc-300 lg:block">
+          {itm.data.description}
+        </p>
+      </TransactionDataTooltip>
       {itm.type === "payable" && (
         <div className="flex flex-col items-end">
           <p className="text-lg font-semibold text-red-500">
@@ -221,7 +258,7 @@ const MobilePopover: React.FC<{
             <div className="my-4 border-b border-zinc-800" />
             <Link
               href="/export"
-              className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800 text-white"
+              className="flex items-center gap-2 rounded p-3 text-white transition duration-300 hover:bg-zinc-800"
             >
               <ArrowDownTrayIcon className="h-5 w-5 text-white" />
               Export

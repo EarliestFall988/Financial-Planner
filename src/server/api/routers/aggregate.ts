@@ -4,7 +4,9 @@ import { type Prisma, type Receivable } from "@prisma/client";
 import { z } from "zod";
 // import { SplitTotal } from "../types"; // Add the missing import statement for the SplitTotal type
 
-type PayablesWithUploadedFilesType = Prisma.PayableGetPayload<{ include: { uploadedFiles: true, Budget: true } }>
+type PayablesWithUploadedFilesType = Prisma.PayableGetPayload<{
+  include: { uploadedFiles: true; Budget: true };
+}>;
 
 export type payable = {
   type: "payable";
@@ -80,7 +82,7 @@ export const aggregateRouter = createTRPCRouter({
       },
       include: {
         uploadedFiles: true,
-        Budget: true
+        Budget: true,
       },
       orderBy: {
         updatedAt: "desc",
