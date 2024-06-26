@@ -64,7 +64,7 @@ const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
           : "border-b border-zinc-800"
       }  p-2 transition duration-100 hover:bg-zinc-800`}
     >
-      <div className="w-3/4 md:w-1/3">
+      <div className="w-3/4 lg:w-1/3">
         {itm.type === "payable" && (
           <>
             <div className="flex w-full items-center justify-start gap-1">
@@ -75,16 +75,20 @@ const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
                   </p>
                 </div>
               </TransactionDataTooltip>
-              {itm.data.Budget && (
-                <div className="flex max-w-14 rounded-full bg-blue-800 px-1 md:max-w-28">
-                  <p className="truncate text-ellipsis whitespace-nowrap text-xs text-white">
-                    {itm.data.Budget?.name}
-                  </p>
-                </div>
-              )}
             </div>
-            <div className="flex items-center justify-start gap-2">
-              <p className="text-zinc-300">{itm.data.payedTo ?? ""}</p>
+            <div className="flex items-center justify-start gap-1 text-zinc-300">
+              <p className="truncate text-zinc-300">{itm.data.payedTo ?? ""}</p>
+
+              {itm.data.Budget && (
+                <>
+                  <p>•</p>
+                  <div className="flex max-w-14 italic md:max-w-28">
+                    <p className="truncate text-ellipsis whitespace-nowrap text-xs text-zinc-300">
+                      {itm.data.Budget?.name}
+                    </p>
+                  </div>
+                </>
+              )}
               {itm.data.uploadedFiles.length > 0 && (
                 <PaperClipIcon className="h-3 w-3 text-zinc-300" />
               )}
@@ -276,37 +280,48 @@ const MobilePopover: React.FC<{
 };
 
 const SideNav = () => {
+  const { user } = useClerk();
+
   return (
-    <div className="hidden w-44 flex-col gap-2 p-2 md:flex">
-      <div className="h-[10vh]" />
-      <Link
-        href="/payables/new"
-        className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
-      >
-        <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-white" />
-        Pay
-      </Link>
-      <Link
-        href="/receivables/new"
-        className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
-      >
-        <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-white" />
-        Fund
-      </Link>
-      <Link
-        href="/my-budget/all"
-        className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
-      >
-        <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
-        Budget
-      </Link>
-      <Link
-        href="/export"
-        className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
-      >
-        <ArrowDownTrayIcon className="h-5 w-5 text-white" />
-        Export
-      </Link>
+    <div className="hidden w-44 flex-col justify-between gap-2 p-2 md:flex">
+      <div>
+        <div className="h-[10vh]" />
+        <Link
+          href="/payables/new"
+          className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+        >
+          <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-white" />
+          Pay
+        </Link>
+        <Link
+          href="/receivables/new"
+          className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+        >
+          <ArrowRightEndOnRectangleIcon className="h-5 w-5 text-white" />
+          Fund
+        </Link>
+        <Link
+          href="/my-budget/all"
+          className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+        >
+          <AdjustmentsVerticalIcon className="h-5 w-5 text-white" />
+          Budget
+        </Link>
+        <Link
+          href="/export"
+          className="flex items-center gap-2 rounded p-3 transition duration-300 hover:bg-zinc-800"
+        >
+          <ArrowDownTrayIcon className="h-5 w-5 text-white" />
+          Export
+        </Link>
+      </div>
+      <div>
+        <div className="hidden items-center p-3 rounded gap-2 md:flex">
+          <UserButton />
+          <p className="text-white">Account</p>
+        </div>
+        <div className="h-[5vh]" />
+      </div>
     </div>
   );
 };
@@ -340,10 +355,12 @@ const Page: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-[100vh] bg-zinc-900 text-white">
-        <div className="fixed top-0 z-10 flex w-full items-start justify-between bg-zinc-900/60 p-2 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold">Recent Activity</h2>
-          <div className="hidden items-center justify-center gap-4 md:flex">
-            <UserButton />
+        <div className="fixed top-0 z-10 flex w-full items-center justify-between bg-zinc-900/60 p-2 backdrop-blur-sm lg:block">
+          <div className="flex items-start justify-between px-8 pt-3 lg:mx-auto lg:w-1/2">
+            <div>
+              <h2 className="text-lg font-semibold lg:text-3xl">Activity</h2>
+              <p className="text-xs">Hello, {user.firstName}</p>
+            </div>
           </div>
           {isLoading ? (
             <div></div>
@@ -401,7 +418,7 @@ const Page: NextPage = () => {
 
             <div className="h-[20vh]" />
           </div>
-          <div className="hidden w-44 p-2 md:block">
+          <div className="hidden h-[70vh] w-44 p-2 md:block">
             <div className="h-[10vh]" />
             <Overview className="block" />
             <div className="text-sm text-zinc-400">Spent</div>
@@ -409,18 +426,20 @@ const Page: NextPage = () => {
               {formatCurrency.format(Math.abs(spentResult ?? 0))}
             </div>
             <div className="my-4 border-b border-zinc-800" />
-            <p className="text-sm font-semibold text-zinc-200">Budget</p>
-            {splitData?.map((itm) => {
-              return (
-                <SplitItem
-                  key={itm.budgetSplitId}
-                  name={itm.name}
-                  total={itm.amount}
-                  spent={itm.spent}
-                  className="block py-2"
-                ></SplitItem>
-              );
-            })}
+            <div className="h-full w-full overflow-auto">
+              <p className="text-sm font-semibold text-zinc-200">Budget</p>
+              {splitData?.map((itm) => {
+                return (
+                  <SplitItem
+                    key={itm.budgetSplitId}
+                    name={itm.name}
+                    total={itm.amount}
+                    spent={itm.spent}
+                    className="block py-2"
+                  ></SplitItem>
+                );
+              })}
+            </div>
           </div>
         </div>
         <MobileNav />
