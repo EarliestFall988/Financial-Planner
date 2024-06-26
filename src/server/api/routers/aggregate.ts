@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { type Prisma, type Receivable } from "@prisma/client";
 import { z } from "zod";
+import { GetSundayAndSaturdayFromADate } from "~/utils/dateHelpers";
 // import { SplitTotal } from "../types"; // Add the missing import statement for the SplitTotal type
 
 type PayablesWithUploadedFilesType = Prisma.PayableGetPayload<{
@@ -161,6 +162,51 @@ export const aggregateRouter = createTRPCRouter({
 
     return a;
   }),
+
+  getCashflowToSpentDifferenceByWeek: privateProcedure.query(
+    async ({ ctx }) => {
+      const userId = ctx.userId;
+
+      if (!userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+        });
+      }
+
+      const date = new Date();
+      const thisMonth = date.getMonth() + 1;
+      const thisYear = date.getFullYear();
+
+      const { sundayStr, saturdayStr } = GetSundayAndSaturdayFromADate(date);
+
+      const totalOut = await ctx.db.$queryRawUnsafe<{ result: number | null }[]>(
+        `
+      SELECT DISTINCT SUM("Payable"."amount") as result
+      FROM "Payable"
+      WHERE to_char("Payable"."date", 'YYYY-MM-DD') >= $1 AND to_char("Payable"."date", 'YYYY-MM-DD') <= $2 AND "Payable"."authorId" = $3
+      `,
+        sundayStr,
+        saturdayStr,
+        userId,
+      );
+
+      const totalIn = await ctx.db.$queryRawUnsafe<{ result: number | null }[]>(
+        `
+      SELECT DISTINCT SUM("Receivable"."amount") as result
+      FROM "Receivable"
+      WHERE to_char("Receivable"."date", 'YYYY-MM-DD') >= $1 AND to_char("Receivable"."date", 'YYYY-MM-DD') <= $2 AND "Receivable"."authorId" = $3
+      `,
+        sundayStr,
+        saturdayStr,
+        userId,
+      );
+
+      console.log(sundayStr, saturdayStr);
+      console.log(totalOut, totalIn);
+
+      return (totalIn[0]?.result ?? 0) - (totalOut[0]?.result ?? 0);
+    },
+  ),
 
   getTotalBySplit: privateProcedure.query(async ({ ctx }) => {
     const userId = ctx.userId;

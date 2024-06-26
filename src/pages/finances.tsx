@@ -5,6 +5,7 @@ import {
   ArrowDownTrayIcon,
   ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
+  Bars3Icon,
   ExclamationTriangleIcon,
   PaperClipIcon,
 } from "@heroicons/react/24/solid";
@@ -28,6 +29,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 
 import * as Popover from "@radix-ui/react-popover";
 import { type ReactNode } from "react";
+import { CurrencyTextComponent } from "~/components/CurrencyTextComponent";
 
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
@@ -41,7 +43,7 @@ const TransactionDataTooltip: React.FC<{
       <Tooltip.Root>
         <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className="rounded bg-blue-600/20 border-zinc-500 text-white backdrop-blur-lg p-2 data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade  data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade">
+          <Tooltip.Content className="rounded border-zinc-500 bg-blue-600/20 p-2 text-white backdrop-blur-lg data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade  data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade">
             <p className="text-lg">{name}</p>
             <Tooltip.Arrow className="fill-blue-600/40" />
           </Tooltip.Content>
@@ -124,17 +126,20 @@ const TransactionItem: React.FC<{ itm: payable | receivable }> = ({ itm }) => {
   );
 };
 
-const Balance: React.FC<{ abbreviated?: boolean; className?: string }> = ({
+const Overview: React.FC<{ abbreviated?: boolean; className?: string }> = ({
   abbreviated,
   className,
 }) => {
   const { data: balance, isLoading: loadingBalance } =
     api.aggregate.getBalance.useQuery();
 
+  const { data, isLoading } =
+    api.aggregate.getCashflowToSpentDifferenceByWeek.useQuery();
+
   return (
     <>
-      {loadingBalance && <PropagateSpinner />}
-      {!loadingBalance && (
+      {(loadingBalance || isLoading) && <PropagateSpinner />}
+      {!loadingBalance && !isLoading && (
         <div
           className={
             className ? className : "flex items-end justify-start gap-2"
@@ -143,16 +148,12 @@ const Balance: React.FC<{ abbreviated?: boolean; className?: string }> = ({
           <p className="text-sm text-zinc-400">
             {abbreviated ? "Bal" : "Balance"}
           </p>
-          {(balance ?? 0) > 0 && (
-            <p className="text-lg font-semibold text-green-500">
-              {formatCurrency.format(Math.abs(balance ?? 0))}
-            </p>
-          )}
-          {(balance ?? 0) < 0 && (
-            <p className="text-lg font-semibold text-red-500">
-              ({formatCurrency.format(Math.abs(balance ?? 0))})
-            </p>
-          )}
+          <CurrencyTextComponent value={balance} />
+          <div className="h-3"></div>
+          <p className="text-sm text-zinc-400">
+            {abbreviated ? "In-out" : "In-out this week"}
+          </p>
+          <CurrencyTextComponent value={data} className="text-sm" />
         </div>
       )}
     </>
@@ -172,17 +173,7 @@ const SplitItem: React.FC<{
       }
     >
       <p className="text-sm text-zinc-400">{name}</p>
-      {(total ?? 0) > 0 && (
-        <p className="text-lg font-semibold text-green-500">
-          {formatCurrency.format(Math.abs(total ?? 0))}{" "}
-          <span className="text-sm text-zinc-500">left</span>
-        </p>
-      )}
-      {(total ?? 0) < 0 && (
-        <p className="text-lg font-semibold text-red-500">
-          ({formatCurrency.format(Math.abs(total ?? 0))})
-        </p>
-      )}
+      <CurrencyTextComponent value={total} />
       {spent !== 0 && total > 0 && (
         <p className="text-sm text-zinc-500">
           ({formatCurrency.format(Math.abs(spent ?? 0))})
@@ -194,7 +185,7 @@ const SplitItem: React.FC<{
 
 const MobileNav = () => {
   return (
-    <div className="fixed bottom-0 w-full rounded-t-lg border-t border-zinc-500 bg-zinc-900 p-2 md:hidden">
+    <div className="fixed bottom-0 w-full bg-zinc-950 p-2 md:hidden">
       <div className="flex items-center justify-between">
         <div className="flex w-full items-center justify-around gap-2">
           <Link
@@ -228,20 +219,32 @@ const MobilePopover: React.FC<{
   children: ReactNode;
   splitData: SplitTotal[] | undefined;
   spentResult: number | undefined;
-}> = ({ children, splitData, spentResult }) => {
+  balance: number | undefined;
+}> = ({ children, splitData, spentResult, balance }) => {
+  const { data, isLoading } =
+    api.aggregate.getCashflowToSpentDifferenceByWeek.useQuery();
+
   return (
     <Popover.Root>
       <Popover.Trigger asChild>{children}</Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="w-[260px] rounded border border-zinc-800 bg-zinc-950/70 p-5 outline-none backdrop-blur will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade"
+          className="w-[40vw] rounded bg-zinc-950 p-5 outline-none will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade"
           sideOffset={9}
         >
           <div className="flex flex-col">
+            <div className="text-sm text-zinc-400">Balance</div>
+            <CurrencyTextComponent value={balance} />
             <div className="text-sm text-zinc-400">Spent</div>
             <div className="text-amber-500">
               {formatCurrency.format(Math.abs(spentResult ?? 0))}
             </div>
+            {!isLoading && (
+              <>
+                <div className="text-sm text-zinc-400">in-out this wk</div>
+                <CurrencyTextComponent value={data} />
+              </>
+            )}
             <div className="my-4 border-b border-zinc-800" />
             <p className="text-sm font-semibold text-zinc-200">Budget</p>
             {splitData?.map((itm) => {
@@ -265,7 +268,7 @@ const MobilePopover: React.FC<{
             </Link>
           </div>
 
-          <Popover.Arrow className="fill-zinc-950" />
+          <Popover.Arrow className="fill-emerald-950" />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -313,6 +316,8 @@ const Page: NextPage = () => {
 
   const { data, isLoading, isError } = api.aggregate.getMyActivity.useQuery();
 
+  const { data: balance } = api.aggregate.getBalance.useQuery();
+
   const { data: splitData } = api.aggregate.getTotalBySplit.useQuery();
 
   const { data: spentResult } = api.aggregate.getTotalSpent.useQuery();
@@ -340,13 +345,19 @@ const Page: NextPage = () => {
           <div className="hidden items-center justify-center gap-4 md:flex">
             <UserButton />
           </div>
-          <div className="flex items-center justify-center gap-4 md:hidden">
-            <MobilePopover spentResult={spentResult} splitData={splitData}>
-              <div className="rounded p-1 transition duration-300 hover:bg-zinc-800">
-                <Balance abbreviated />
-              </div>
-            </MobilePopover>
-          </div>
+          {isLoading ? (
+            <div></div>
+          ) : (
+            <div className="flex items-center justify-center gap-4 md:hidden">
+              <MobilePopover
+                spentResult={spentResult}
+                splitData={splitData}
+                balance={balance}
+              >
+                <Bars3Icon className="h-9 p-1" />
+              </MobilePopover>
+            </div>
+          )}
         </div>
         <div className="mx-auto flex gap-2 p-2 lg:w-5/6 lg:p-0 xl:w-2/3">
           <SideNav />
@@ -392,7 +403,7 @@ const Page: NextPage = () => {
           </div>
           <div className="hidden w-44 p-2 md:block">
             <div className="h-[10vh]" />
-            <Balance className="block" />
+            <Overview className="block" />
             <div className="text-sm text-zinc-400">Spent</div>
             <div className="text-amber-500">
               {formatCurrency.format(Math.abs(spentResult ?? 0))}

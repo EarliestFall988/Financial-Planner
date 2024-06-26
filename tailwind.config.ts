@@ -5,6 +5,9 @@ export default {
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
+      backgroundImage: {
+        hero: "url('/indexbg.jpg')",
+      },
       keyframes: {
         slideUpAndFade: {
           from: { opacity: "0", transform: "translateY(2px)" },
