@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import {
+  CameraIcon,
   CloudArrowUpIcon,
   ExclamationTriangleIcon,
   TrashIcon,

@@ -26,7 +26,8 @@ model Payable {
     Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String?
 
-    authorId String @db.VarChar(255)
+    authorId      String          @db.VarChar(255)
+    RecurringInfo RecurringInfo[]
 }
 
 model Receivable {
@@ -45,7 +46,8 @@ model Receivable {
     Budget   Split?  @relation(fields: [budgetId], references: [id])
     budgetId String? @db.VarChar(255)
 
-    authorId String @db.VarChar(255)
+    authorId      String          @db.VarChar(255)
+    RecurringInfo RecurringInfo[]
 }
 
 model Split {
@@ -99,4 +101,20 @@ model UploadedFile {
 
     Receivable   Receivable? @relation(fields: [receivableId], references: [id])
     receivableId String?
+}
+
+model RecurringInfo {
+    id        String   @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    recurringType Int @default(0) //0 == monthly, 1 == bi-weekly, 2 == weekly, 4 == daily, 5 == quarterly, 6 == bi-annualy
+
+    Payable   Payable? @relation(fields: [payableId], references: [id])
+    payableId String?
+
+    Receivable   Receivable? @relation(fields: [receivableId], references: [id])
+    receivableId String?
+
+    authorId String  @db.VarChar(255)
 }

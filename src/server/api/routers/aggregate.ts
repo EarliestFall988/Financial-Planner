@@ -157,9 +157,6 @@ export const aggregateRouter = createTRPCRouter({
     );
 
     const a = result[0]?.amount ?? 0;
-
-    console.log(a);
-
     return a;
   }),
 
@@ -201,8 +198,8 @@ export const aggregateRouter = createTRPCRouter({
         userId,
       );
 
-      console.log(sundayStr, saturdayStr);
-      console.log(totalOut, totalIn);
+      // console.log(sundayStr, saturdayStr);
+      // console.log(totalOut, totalIn);
 
       return (totalIn[0]?.result ?? 0) - (totalOut[0]?.result ?? 0);
     },

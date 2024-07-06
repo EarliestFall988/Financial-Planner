@@ -316,7 +316,7 @@ const SideNav = () => {
         </Link>
       </div>
       <div>
-        <div className="hidden items-center p-3 rounded gap-2 md:flex">
+        <div className="hidden items-center gap-2 rounded p-3 md:flex">
           <UserButton />
           <p className="text-white">Account</p>
         </div>
@@ -356,7 +356,7 @@ const Page: NextPage = () => {
       </Head>
       <main className="min-h-[100vh] bg-zinc-900 text-white">
         <div className="fixed top-0 z-10 flex w-full items-center justify-between bg-zinc-900/60 p-2 backdrop-blur-sm lg:block">
-          <div className="flex items-start justify-between px-8 pt-3 lg:mx-auto lg:w-1/2">
+          <div className="flex items-start justify-between px-2 pt-3 lg:mx-auto lg:w-1/2 lg:px-8">
             <div>
               <h2 className="text-lg font-semibold lg:text-3xl">Activity</h2>
               <p className="text-xs">Hello, {user.firstName}</p>
@@ -365,7 +365,7 @@ const Page: NextPage = () => {
           {isLoading ? (
             <div></div>
           ) : (
-            <div className="flex items-center justify-center gap-4 md:hidden">
+            <div className="flex items-center  justify-center gap-4  md:hidden">
               <MobilePopover
                 spentResult={spentResult}
                 splitData={splitData}
