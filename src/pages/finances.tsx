@@ -233,7 +233,7 @@ const MobilePopover: React.FC<{
       <Popover.Trigger asChild>{children}</Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="w-[40vw] rounded bg-zinc-950 p-5 outline-none will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade"
+          className="h-[60vh] w-[100vw] overflow-y-scroll rounded bg-zinc-950 p-5 outline-none will-change-[transform,opacity] data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=top]:animate-slideDownAndFade"
           sideOffset={9}
         >
           <div className="flex flex-col">
@@ -270,9 +270,13 @@ const MobilePopover: React.FC<{
               <ArrowDownTrayIcon className="h-5 w-5 text-white" />
               Export
             </Link>
+            <div className="text-white flex items-center just-center gap-2">
+              <UserButton/>
+              <p>Account</p>
+            </div>
           </div>
 
-          <Popover.Arrow className="fill-emerald-950" />
+          <Popover.Arrow className="fill-white" />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
